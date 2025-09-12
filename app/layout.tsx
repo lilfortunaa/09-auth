@@ -1,32 +1,35 @@
-import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
-import './globals.css';
-import Header from '@/components/Header/Header';
-import Footer from '@/components/Footer/Footer';
-import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
+import type { Metadata } from "next";
+import { Roboto } from "next/font/google";
+import "./globals.css";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
+import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
 
 const roboto = Roboto({
-  subsets: ['latin'], 
-  weight: ['400', '700'],
-  variable: '--font-roboto', 
-  display: 'swap', 
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-roboto",
+  display: "swap",
 });
 
-
 export const metadata: Metadata = {
-  title: 'NoteHub',
-  description: 'NoteHub - a daily tool for creating, saving and organizing notes',
+  title: "NoteHub",
+  description: "NoteHub - a daily tool for creating, saving and organizing notes",
   openGraph: {
     title: "NoteHub",
-    description:"NoteHub helps you create, save and organize your notes quickly and easily",
-    url:'https://notehub.com/',
-    images: [{
-      url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
-      width: 425,
-      height:283,
-      alt:'NoteHub Preview',
-    }]
-  }
+    description:
+      "NoteHub helps you create, save and organize your notes quickly and easily",
+    url: "https://notehub.com/",
+    images: [
+      {
+        url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+        width: 425,
+        height: 283,
+        alt: "NoteHub Preview",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -41,8 +44,10 @@ export default function RootLayout({
       <body className={roboto.variable}>
         <TanStackProvider>
           <Header />
-          {children}
-          {modal}
+          <AuthProvider>
+            {children}
+            {modal}
+          </AuthProvider>
           <Footer />
         </TanStackProvider>
       </body>

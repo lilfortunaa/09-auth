@@ -1,4 +1,4 @@
-import css from './../app/notes/filter/[...slug]/page.module.css';
+import css from './../app/(private routes)/notes/filter/[...slug]/page.module.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

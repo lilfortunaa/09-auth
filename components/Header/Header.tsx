@@ -1,8 +1,12 @@
 import Link from 'next/link';
 import TagsMenu from '@/components/TagsMenu/TagsMenu';
+import AuthNavigation from '@/components/AuthNavigation/AuthNavigation';
 import styles from './Header.module.css';
 
 export default function Header() {
+    console.log("Logging out...");
+  
+
   return (
     <header className={styles.header}>
       <Link href="/" aria-label="Home">
@@ -16,6 +20,7 @@ export default function Header() {
           <li>
             <TagsMenu />
           </li>
+          <AuthNavigation/>
         </ul>
       </nav>
     </header>

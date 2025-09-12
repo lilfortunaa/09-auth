@@ -1,6 +1,6 @@
 import NoteModalClient from './NoteModalClient';
 import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api';
+import { fetchNoteById } from '@/lib/clientApi';
 
 interface Props {
   params: Promise<{ id: string }>;

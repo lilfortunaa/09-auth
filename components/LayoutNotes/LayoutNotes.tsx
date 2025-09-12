@@ -1,5 +1,5 @@
 import styles from './LayoutNotes.module.css';
-import SidebarNotes from '../../app/notes/filter/@sidebar/SidebarNotes';
+import SidebarNotes from '../../app/(private routes)/notes/filter/@sidebar/SidebarNotes';
 
 export default function LayoutNotes({
   children,
