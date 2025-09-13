@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signInUser, SignIn } from "@/lib/clientApi";
+import { signInUser, SignIn } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import type { User as ApiUser } from "@/types/user";
 import css from "./SignInPage.module.css";

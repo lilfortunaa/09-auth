@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider, useQuery, hydrate } from '@tanstack/react-query';
 import Modal from '@/components/Modal/Modal';
 import NoteDetailsClient from '@/app/(private routes)/notes/[id]/NoteDetails.client';
-import { fetchNoteById } from '@/lib/clientApi';
+import { fetchNoteById } from '@/lib/api/clientApi';
 import type { Note } from '@/types/note';
 import { useRouter } from 'next/navigation';
 

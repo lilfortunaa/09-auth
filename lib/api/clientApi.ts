@@ -1,7 +1,7 @@
 'use client';
 
 import type { AxiosResponse } from "axios";
-import { api } from "@/lib/api";
+import { api } from "@/lib/api/api";
 import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
 
