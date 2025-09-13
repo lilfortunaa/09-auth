@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
+import type { User as ApiUser } from "@/types/user";
 import css from "./SignUpPage.module.css";
 import axios from "axios";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { setUser } = useAuthStore();
   const [error, setError] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -19,8 +22,19 @@ export default function SignUpPage() {
     const password = formData.get("password") as string;
 
     try {
-      await signUp({ email, password });
-      router.push("/profile"); 
+      const userFromServer: ApiUser = await signUp({ email, password });
+
+     
+      const userForStore: ApiUser = {
+        id: userFromServer.id,
+        email: userFromServer.email,
+        username: userFromServer.username || "",
+        avatar: userFromServer.avatar || "",
+        createdAt: userFromServer.createdAt, 
+      };
+
+      setUser(userForStore);
+      router.push("/profile");
     } catch (err: unknown) {
       console.error(err);
 

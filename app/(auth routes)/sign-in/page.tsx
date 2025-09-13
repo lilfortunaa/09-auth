@@ -1,33 +1,41 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { signInUser, SignIn } from '@/lib/clientApi';
-import css from './SignInPage.module.css';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signInUser, SignIn } from "@/lib/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
+import type { User as ApiUser } from "@/types/user";
+import css from "./SignInPage.module.css";
 
 export default function SignInPage() {
   const router = useRouter();
-  const [error, setError] = useState('');
+  const { setUser } = useAuthStore();
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
     try {
-      await signInUser({ email, password } as SignIn);
-      router.push('/profile');
+      const userFromServer: ApiUser = await signInUser({ email, password } as SignIn);
+
+      const userForStore = {
+        id: userFromServer.id,
+        email: userFromServer.email,
+        username: userFromServer.username || "",
+        avatar: userFromServer.avatar || "",
+        createdAt: userFromServer.createdAt,
+      };
+
+      setUser(userForStore);
+      router.push("/profile");
     } catch (err: unknown) {
-    
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Login failed');
-      }
+      if (err instanceof Error) setError(err.message);
+      else setError("Login failed");
     }
   };
 
@@ -47,9 +55,7 @@ export default function SignInPage() {
         </div>
 
         <div className={css.actions}>
-          <button type="submit" className={css.submitButton}>
-            Log in
-          </button>
+          <button type="submit" className={css.submitButton}>Log in</button>
         </div>
 
         {error && <p className={css.error}>{error}</p>}

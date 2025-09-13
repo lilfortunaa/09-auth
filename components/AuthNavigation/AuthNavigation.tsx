@@ -9,10 +9,15 @@ export default function AuthNavigation() {
   const router = useRouter();
   const { user, isAuthenticated, clearIsAuthenticated } = useAuthStore();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+  try {
+    await fetch("/api/auth/logout", { method: "POST" });
     clearIsAuthenticated();
-    router.push("/sign-in"); 
-  };
+    router.push("/sign-in");
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
 
   return (
     <>

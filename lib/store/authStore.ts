@@ -1,13 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-};
+import type { User } from "@/types/user"; 
 
 type AuthState = {
   user: User | null;
@@ -15,7 +8,6 @@ type AuthState = {
   setUser: (user: User) => void;
   clearIsAuthenticated: () => void;
 };
-
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -34,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
         }),
     }),
     {
-      name: "auth-storage", 
+      name: "auth-storage",
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,

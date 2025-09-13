@@ -1,7 +1,7 @@
 'use client';
 
 import type { AxiosResponse } from "axios";
-import { api } from "@/app/api/api";
+import { api } from "@/lib/api";
 import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
 
@@ -87,3 +87,4 @@ export async function signInUser(data: SignIn): Promise<User> {
   });
   return res.data;
 }
+

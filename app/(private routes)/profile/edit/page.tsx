@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -10,11 +10,17 @@ export default function EditProfilePage() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
 
-  const [username, setUsername] = useState(user?.name || "");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!user) return null; 
+
+  useEffect(() => {
+    if (user?.username) setUsername(user.username);
+  }, [user?.username]);
+
+
+  if (!user) return null;
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,17 +30,16 @@ export default function EditProfilePage() {
     try {
       const res = await fetch("/api/profile/update", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: username }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
       });
 
       if (!res.ok) throw new Error("Failed to update profile");
 
       const data = await res.json();
-      setUser(data.user); 
-      router.push("/profile"); 
+      const updatedUser = { ...user, username: data.user.username };
+      setUser(updatedUser);
+      router.push("/profile");
     } catch (err) {
       setError("Failed to update username");
       console.error(err);
@@ -43,9 +48,7 @@ export default function EditProfilePage() {
     }
   };
 
-  const handleCancel = () => {
-    router.push("/profile");
-  };
+  const handleCancel = () => router.push("/profile");
 
   return (
     <main className={css.mainContent}>
@@ -81,12 +84,7 @@ export default function EditProfilePage() {
             <button type="submit" className={css.saveButton} disabled={loading}>
               {loading ? "Saving..." : "Save"}
             </button>
-            <button
-              type="button"
-              className={css.cancelButton}
-              onClick={handleCancel}
-              disabled={loading}
-            >
+            <button type="button" className={css.cancelButton} onClick={handleCancel} disabled={loading}>
               Cancel
             </button>
           </div>
