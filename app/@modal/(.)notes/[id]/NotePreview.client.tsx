@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import Modal from '@/components/Modal/Modal';
 import type { Note } from '@/types/note';
-import { fetchNoteById } from '@/lib/api';
+import { fetchNoteById } from '@/lib/clientApi';
 import { useRouter } from 'next/navigation';
 
 interface NotePreviewProps {
