@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { getSession, getCurrentUser } from "@/lib/api/clientApi";
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,17 +16,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     async function checkSession() {
       try {
         
-        const res = await fetch("/api/auth/session", { cache: "no-store" });
+        const session = await getSession();
 
-        if (!res.ok) {
+        if (!session?.isAuthenticated) {
           clearIsAuthenticated();
          
           if (pathname.startsWith("/profile") || pathname.startsWith("/dashboard")) {
             router.replace("/sign-in");
           }
         } else {
-          const data = await res.json();
-          setUser(data.user); 
+          const user = await getCurrentUser();
+          setUser(user); 
         }
       } catch (error) {
         console.error("Session check failed:", error);

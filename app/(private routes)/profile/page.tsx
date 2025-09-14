@@ -1,6 +1,7 @@
 
 import type { Metadata } from "next";
 import ProfileContent from "./ProfilePage";
+import { getCurrentUser } from "@/lib/api/serverApi";
 
 export const metadata: Metadata = {
   title: "Profile | NoteHub",
@@ -15,6 +16,15 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function ProfilePage() {
-  return <ProfileContent />;
+export default async function ProfilePage() {
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return <p className="text-center mt-10">User data not available.</p>;
+  }
+
+   return (
+    <ProfileContent/>
+  );
 }

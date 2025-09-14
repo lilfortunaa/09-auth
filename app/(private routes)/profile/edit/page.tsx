@@ -4,6 +4,7 @@ import { useState, useEffect} from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuthStore } from "@/lib/store/authStore";
+import { updateCurrentUser } from "@/lib/api/clientApi";
 import css from "./EditProfilePage.module.css";
 
 export default function EditProfilePage() {
@@ -28,29 +29,23 @@ export default function EditProfilePage() {
     setError(null);
 
     try {
-      const res = await fetch("/api/profile/update", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }),
-      });
-
-      if (!res.ok) throw new Error("Failed to update profile");
-
-      const data = await res.json();
-      const updatedUser = { ...user, username: data.user.username };
+      
+      const updatedUser = await updateCurrentUser({ name:username });
       setUser(updatedUser);
+
       router.push("/profile");
     } catch (err) {
-      setError("Failed to update username");
       console.error(err);
+      setError("Failed to update username");
     } finally {
       setLoading(false);
     }
   };
 
+
   const handleCancel = () => router.push("/profile");
 
-  return (
+   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
         <h1 className={css.formTitle}>Edit Profile</h1>

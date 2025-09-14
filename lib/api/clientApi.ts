@@ -73,3 +73,33 @@ export async function signInUser(data: SignIn): Promise<User> {
   const res: AxiosResponse<User> = await api.post("/auth/login", data);
   return res.data;
 }
+
+export async function logout():Promise<void> {
+  await api.post('/auth/logout');
+}
+
+export interface Session {
+  user: User;
+  isAuthenticated: boolean;
+}
+
+export async function getSession(): Promise<Session> {
+  const res: AxiosResponse<Session> = await api.get("/auth/session");
+  return res.data;
+}
+
+export async function getCurrentUser():Promise<User> {
+  const res: AxiosResponse<User> = await api.get('/users/me');
+  return res.data;
+}
+
+export interface UpdateUserDto{
+  email?: string;
+  password?: string;
+  name?: string;
+}
+
+export async function updateCurrentUser(data: UpdateUserDto):Promise<User>{
+  const res: AxiosResponse<User> = await api.patch('/users/me', data);
+  return res.data;
+}
