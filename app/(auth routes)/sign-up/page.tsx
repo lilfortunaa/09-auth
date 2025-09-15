@@ -26,11 +26,9 @@ export default function SignUpPage() {
 
      
       const userForStore: ApiUser = {
-        id: userFromServer.id,
         email: userFromServer.email,
         username: userFromServer.username || "",
         avatar: userFromServer.avatar || "",
-        createdAt: userFromServer.createdAt, 
       };
 
       setUser(userForStore);
