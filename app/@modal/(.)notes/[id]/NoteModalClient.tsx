@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider, useQuery, hydrate } from '@tanstack/react-query';
 import Modal from '@/components/Modal/Modal';
@@ -9,13 +10,12 @@ import { useRouter } from 'next/navigation';
 
 interface Props {
   noteId: string;
-  dehydratedState?: unknown; 
+  dehydratedState?: unknown;
 }
 
 export default function NoteModalClient({ noteId, dehydratedState }: Props) {
   const [isOpen, setIsOpen] = useState(true);
   const router = useRouter();
-
   const [queryClient] = useState(() => new QueryClient());
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function NoteModalClient({ noteId, dehydratedState }: Props) {
 
   const handleClose = () => {
     setIsOpen(false);
-    router.back(); 
+    router.back();
   };
 
   if (!isOpen) return null;
@@ -39,18 +39,19 @@ export default function NoteModalClient({ noteId, dehydratedState }: Props) {
 }
 
 function NoteModalContent({ noteId, onClose }: { noteId: string; onClose: () => void }) {
-  const { data: note } = useQuery<Note>({
+  const { data: note, isLoading, isError } = useQuery<Note>({
     queryKey: ['note', noteId],
     queryFn: () => fetchNoteById(noteId),
     refetchOnMount: false,
   });
 
-  if (!note) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !note) return <div>Error loading note.</div>;
 
   return (
     <Modal onClose={onClose}>
       <button onClick={onClose} style={{ float: 'right' }}>Close</button>
-      <NoteDetailsClient id={noteId} />
+      <NoteDetailsClient note={note} />
     </Modal>
   );
 }

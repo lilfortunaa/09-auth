@@ -8,25 +8,18 @@ export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
   const privateRoutes = ["/profile", "/notes"]; 
-  const publicRoutes = ["/sign-in", "/sign-up"];
 
   const isAuthenticated = Boolean(accessToken);
 
- 
+
   if (!isAuthenticated && privateRoutes.some((r) => pathname.startsWith(r))) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
   
-  if (isAuthenticated && publicRoutes.some((r) => pathname.startsWith(r))) {
-    return NextResponse.redirect(new URL("/", req.url)); 
-  }
-
-
   if (!accessToken && refreshToken) {
     try {
       const newSession = await checkSession(refreshToken);
-
       if (newSession?.accessToken && newSession?.refreshToken) {
         const response = NextResponse.next();
         response.cookies.set("accessToken", newSession.accessToken, {
@@ -39,7 +32,6 @@ export async function middleware(req: NextRequest) {
           sameSite: "strict",
           secure: true,
         });
-
         return response;
       }
     } catch (error) {

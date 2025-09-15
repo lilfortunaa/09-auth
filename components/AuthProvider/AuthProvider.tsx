@@ -5,7 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { getSession, getCurrentUser } from "@/lib/api/clientApi";
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export default function AuthProvider({ children }: AuthProviderProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -13,20 +17,24 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function checkSession() {
+    async function checkAuth() {
       try {
-        
         const session = await getSession();
 
         if (!session?.isAuthenticated) {
           clearIsAuthenticated();
-         
+
           if (pathname.startsWith("/profile") || pathname.startsWith("/dashboard")) {
             router.replace("/sign-in");
           }
         } else {
           const user = await getCurrentUser();
-          setUser(user); 
+          if (user) {
+            setUser(user);
+          } else {
+            clearIsAuthenticated();
+            router.replace("/sign-in");
+          }
         }
       } catch (error) {
         console.error("Session check failed:", error);
@@ -37,8 +45,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       }
     }
 
-    checkSession();
-  }, [pathname,clearIsAuthenticated, setUser, router]);
+    checkAuth();
+  }, [pathname, setUser, clearIsAuthenticated, router]);
 
   if (loading) {
     return (
