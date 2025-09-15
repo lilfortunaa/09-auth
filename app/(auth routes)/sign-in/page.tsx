@@ -24,11 +24,10 @@ export default function SignInPage() {
       const userFromServer: ApiUser = await signInUser({ email, password } as SignIn);
 
       const userForStore = {
-        id: userFromServer.id,
         email: userFromServer.email,
         username: userFromServer.username || "",
         avatar: userFromServer.avatar || "",
-        createdAt: userFromServer.createdAt,
+     
       };
 
       setUser(userForStore);
