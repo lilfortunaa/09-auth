@@ -13,7 +13,7 @@ export default function ModalClientWrapper({ note }: Props) {
 
   return (
     <Modal onClose={() => router.back()}>
-      <NoteDetailsClient note={note} />
+      <NoteDetailsClient id={note.id} />
     </Modal>
   );
 }

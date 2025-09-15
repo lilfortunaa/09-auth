@@ -51,7 +51,7 @@ function NoteModalContent({ noteId, onClose }: { noteId: string; onClose: () => 
   return (
     <Modal onClose={onClose}>
       <button onClick={onClose} style={{ float: 'right' }}>Close</button>
-      <NoteDetailsClient note={note} />
+      <NoteDetailsClient id={note.id} />
     </Modal>
   );
 }
