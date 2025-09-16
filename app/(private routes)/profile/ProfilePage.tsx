@@ -1,14 +1,24 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
+import type { User } from "@/types/user";
 import css from "./ProfilePage.module.css";
 
-export default function ProfileContent() {
-  const { user } = useAuthStore();
+interface ProfileContentProps {
+  user: User;
+}
 
-  if (!user) return null;
+export default function ProfileContent({ user }: ProfileContentProps) {
+  const { setUser, user: storeUser } = useAuthStore();
+
+  useEffect(() => {
+    setUser(user);
+  }, [user, setUser]);
+
+  const displayUser = storeUser || user;
 
   return (
     <main className={css.mainContent}>
@@ -22,7 +32,7 @@ export default function ProfileContent() {
 
         <div className={css.avatarWrapper}>
           <Image
-            src={user.avatar || "/default-avatar.png"}
+            src={displayUser.avatar || "/default-avatar.png"}
             alt="User Avatar"
             width={120}
             height={120}
@@ -31,8 +41,8 @@ export default function ProfileContent() {
         </div>
 
         <div className={css.profileInfo}>
-          <p>Username: {user.username || "No username"}</p>
-          <p>Email: {user.email || "No email"}</p>
+          <p>Username: {displayUser.username || "No username"}</p>
+          <p>Email: {displayUser.email || "No email"}</p>
         </div>
       </div>
     </main>

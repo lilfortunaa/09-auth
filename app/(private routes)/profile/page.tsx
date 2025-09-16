@@ -1,25 +1,14 @@
-
-import type { Metadata } from "next";
 import ProfileContent from "./ProfilePage";
 import { getCurrentUser } from "@/lib/api/serverApi";
-
-
-export const metadata: Metadata = {
-  title: "Profile | NoteHub",
-  description: "View and edit your NoteHub profile information",
-  openGraph: {
-    title: "Profile | NoteHub",
-    description: "View and edit your NoteHub profile information",
-    url: "/profile",
-    siteName: "NoteHub",
-    type: "website",
-  },
-  robots: { index: false, follow: false },
-};
+import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
-  
-  await getCurrentUser(); 
+  try {
+    const user = await getCurrentUser();
+    if (!user) return redirect("/sign-in");
 
-  return <ProfileContent />;
+    return <ProfileContent user={user} />;
+  } catch {
+    return redirect("/sign-in");
+  }
 }

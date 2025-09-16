@@ -1,34 +1,36 @@
-import NoteDetailsClient from './NoteDetails.client';
-import { Metadata } from 'next';
+import NoteDetailsClient from "./NoteDetails.client";
+import type { Metadata } from "next";
 
 interface NotePageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const id = params.id;
+export async function generateMetadata({
+  params,
+}: NotePageProps): Promise<Metadata> {
+  const { id } = await params;
 
   return {
     title: `Note details | NoteHub`,
-    description: 'Browse and organize your notes in NoteHub.',
+    description: "Browse and organize your notes in NoteHub.",
     openGraph: {
       title: `Note details | NoteHub`,
-      description: 'Browse and organize your notes in NoteHub.',
+      description: "Browse and organize your notes in NoteHub.",
       url: `/notes/${id}`,
       images: [
         {
-          url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
+          url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
           width: 425,
           height: 283,
-          alt: 'NoteHub Preview',
+          alt: "NoteHub Preview",
         },
       ],
     },
   };
 }
 
+export default async function NotePage({ params }: NotePageProps) {
+  const { id } = await params;
 
-export default function NotePage({ params }: NotePageProps) {
-  return <NoteDetailsClient id={params.id} />;
+  return <NoteDetailsClient id={id} />;
 }

@@ -17,41 +17,59 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true; 
+
     async function checkAuth() {
       try {
         const session = await getSession();
 
         if (!session?.isAuthenticated) {
-          clearIsAuthenticated();
 
-          if (pathname.startsWith("/profile") || pathname.startsWith("/dashboard")) {
-            router.replace("/sign-in");
+          const token = document.cookie
+            .split("; ")
+            .find((c) => c.startsWith("accessToken="))
+            ?.split("=")[1];
+
+          if (!token) {
+            clearIsAuthenticated();
+            if (
+              pathname.startsWith("/profile") ||
+              pathname.startsWith("/dashboard")
+            ) {
+              router.replace("/sign-in");
+            }
           }
         } else {
-          const user = await getCurrentUser();
-          if (user) {
-            setUser(user);
-          } else {
+          const currentUser = await getCurrentUser();
+          if (currentUser && isMounted) {
+            setUser(currentUser);
+          } else if (isMounted) {
             clearIsAuthenticated();
             router.replace("/sign-in");
           }
         }
       } catch (error) {
         console.error("Session check failed:", error);
-        clearIsAuthenticated();
-        router.replace("/sign-in");
+        if (isMounted) {
+          clearIsAuthenticated();
+          router.replace("/sign-in");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
     checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, [pathname, setUser, clearIsAuthenticated, router]);
 
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <p>Loading...</p>
+        <p>Loading session...</p>
       </div>
     );
   }

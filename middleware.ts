@@ -1,46 +1,49 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { checkSession } from "./lib/api/serverApi"; 
+import { checkSession } from "./lib/api/serverApi";
+import { cookies } from "next/headers";
 
 export async function middleware(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-  const refreshToken = req.cookies.get("refreshToken")?.value;
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
   const pathname = req.nextUrl.pathname;
 
-  const privateRoutes = ["/profile", "/notes"]; 
+  const privateRoutes = ["/profile", "/notes"];
 
-  const isAuthenticated = Boolean(accessToken);
-
-
-  if (!isAuthenticated && privateRoutes.some((r) => pathname.startsWith(r))) {
-    return NextResponse.redirect(new URL("/sign-in", req.url));
-  }
+  let isAuthenticated = Boolean(accessToken);
+  const response = NextResponse.next();
 
   
-  if (!accessToken && refreshToken) {
+  if (!isAuthenticated && refreshToken) {
     try {
-      const newSession = await checkSession(refreshToken);
-      if (newSession?.accessToken && newSession?.refreshToken) {
-        const response = NextResponse.next();
-        response.cookies.set("accessToken", newSession.accessToken, {
+      const newSession = await checkSession();
+      const { accessToken: newAccess, refreshToken: newRefresh } = newSession.data;
+
+      if (newAccess && newRefresh) {
+        response.cookies.set("accessToken", newAccess, {
           httpOnly: true,
           sameSite: "strict",
           secure: true,
         });
-        response.cookies.set("refreshToken", newSession.refreshToken, {
+        response.cookies.set("refreshToken", newRefresh, {
           httpOnly: true,
           sameSite: "strict",
           secure: true,
         });
-        return response;
+        isAuthenticated = true;
       }
     } catch (error) {
       console.error("Session refresh failed:", error);
-      return NextResponse.redirect(new URL("/sign-in", req.url));
     }
   }
 
-  return NextResponse.next();
+  
+  if (!isAuthenticated && privateRoutes.some((route) => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL("/sign-in", req.url));
+  }
+
+  return response;
 }
 
 export const config = {
